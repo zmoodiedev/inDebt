@@ -38,7 +38,16 @@ function getGoogleSheetsClient() {
     const fileContent = fs.readFileSync(credentialsPath, 'utf-8');
     credentials = JSON.parse(fileContent);
   } else if (process.env.GOOGLE_CREDENTIALS) {
-    credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+    // Support both raw JSON and base64-encoded JSON
+    let jsonString = process.env.GOOGLE_CREDENTIALS;
+
+    // Check if it's base64 encoded (doesn't start with '{')
+    if (!jsonString.trim().startsWith('{')) {
+      jsonString = Buffer.from(jsonString, 'base64').toString('utf-8');
+    }
+
+    credentials = JSON.parse(jsonString);
+
     // Fix private key newlines that may get corrupted in environment variables
     if (credentials.private_key) {
       credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
