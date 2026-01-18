@@ -379,4 +379,61 @@
   .bills-columns {
     grid-template-columns: 1fr;
   }
+
+  .bills-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .bills-add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bills-column-summary {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .bills-summary-item {
+    min-width: 80px;
+  }
+
+  .bill-card {
+    flex-wrap: wrap;
+  }
+
+  .bill-card-left {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .bill-card-name {
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .bill-card-details {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .bill-card-right {
+    flex: 1 1 100%;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #F3F4F6;
+  }
+
+  .bill-card-amount {
+    font-size: 16px;
+  }
+
+  .bill-card-status {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
 }

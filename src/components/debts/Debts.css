@@ -515,4 +515,54 @@
   .debts-columns {
     grid-template-columns: 1fr;
   }
+
+  .debts-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .debts-add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .debts-column-summary {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .debts-summary-item {
+    min-width: 80px;
+  }
+
+  .debt-card-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .debt-card-info {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .debt-card-title {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+
+  .debt-card-actions {
+    margin-left: auto;
+  }
+
+  .debt-card-progress-header {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .debt-card-detail-value {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
 }

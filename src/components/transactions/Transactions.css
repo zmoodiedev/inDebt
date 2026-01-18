@@ -277,3 +277,48 @@
   border-color: #FF7B9C;
   color: white;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .transactions-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .transactions-add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .transaction-card {
+    flex-wrap: wrap;
+  }
+
+  .transaction-card-left {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .transaction-card-description {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .transaction-card-details {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .transaction-card-right {
+    flex: 1 1 100%;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #F3F4F6;
+  }
+
+  .transaction-card-amount {
+    font-size: 16px;
+  }
+}

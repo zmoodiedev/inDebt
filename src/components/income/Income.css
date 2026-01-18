@@ -259,3 +259,53 @@
 .income-month-divider:first-child {
   margin-top: 0;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .income-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .income-add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .income-card {
+    flex-wrap: wrap;
+  }
+
+  .income-card-left {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .income-card-source {
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .income-card-details {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .income-card-notes {
+    max-width: 100%;
+  }
+
+  .income-card-right {
+    flex: 1 1 100%;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #F3F4F6;
+  }
+
+  .income-card-amount {
+    font-size: 18px;
+  }
+}

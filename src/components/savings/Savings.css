@@ -292,3 +292,65 @@
 .add-money-input .form-btn {
   flex-shrink: 0;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .savings-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .savings-add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .savings-list {
+    grid-template-columns: 1fr;
+  }
+
+  .savings-card-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .savings-card-info {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .savings-card-title {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .savings-card-actions {
+    margin-left: auto;
+  }
+
+  .savings-card-progress-header {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .savings-card-progress-amounts {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .savings-card-details {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .savings-card-detail {
+    flex: 1 1 auto;
+    min-width: 80px;
+  }
+
+  .savings-card-detail-value {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
