@@ -67,7 +67,7 @@ function getGoogleSheetsClient() {
 }
 
 /**
- * Ensure a sheet exists with headers
+ * Ensure a sheet exists with correct headers
  */
 async function ensureSheet(sheetName: string): Promise<void> {
   const { sheets, spreadsheetId } = getGoogleSheetsClient();
@@ -76,6 +76,8 @@ async function ensureSheet(sheetName: string): Promise<void> {
     // Get spreadsheet metadata
     const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
     const existingSheets = spreadsheet.data.sheets?.map(s => s.properties?.title) || [];
+
+    const expectedHeaders = HEADERS[sheetName as keyof typeof HEADERS];
 
     // Create sheet if it doesn't exist
     if (!existingSheets.includes(sheetName)) {
@@ -91,14 +93,36 @@ async function ensureSheet(sheetName: string): Promise<void> {
       });
 
       // Add headers
-      const headers = HEADERS[sheetName as keyof typeof HEADERS];
-      if (headers) {
+      if (expectedHeaders) {
         await sheets.spreadsheets.values.update({
           spreadsheetId,
           range: `${sheetName}!A1`,
           valueInputOption: 'RAW',
           requestBody: {
-            values: [headers]
+            values: [expectedHeaders]
+          }
+        });
+      }
+    } else if (expectedHeaders) {
+      // Sheet exists - check if headers match and update if needed
+      const response = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: `${sheetName}!1:1`,
+      });
+      const currentHeaders = response.data.values?.[0] || [];
+
+      // Check if headers match
+      const headersMatch = expectedHeaders.length === currentHeaders.length &&
+        expectedHeaders.every((h, i) => h === currentHeaders[i]);
+
+      if (!headersMatch) {
+        // Update headers to match expected
+        await sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${sheetName}!A1`,
+          valueInputOption: 'RAW',
+          requestBody: {
+            values: [expectedHeaders]
           }
         });
       }
@@ -128,8 +152,9 @@ export async function readSheet<T>(sheetName: string): Promise<T[]> {
       return [];
     }
 
-    // First row is headers
-    const headers = rows[0];
+    // Use the code's HEADERS constant for consistency with writeSheet
+    // This ensures we read from the correct column positions
+    const headers = HEADERS[sheetName as keyof typeof HEADERS] || rows[0];
     const data = rows.slice(1).map(row => {
       const obj: Record<string, unknown> = {};
       headers.forEach((header: string, index: number) => {
