@@ -1,11 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { googleSheetsStorage } from '@/lib/googleSheets';
+import { auth } from '@/auth';
+import { supabase } from '@/lib/supabase';
+import { mapDbSavingsGoalToSavingsGoal, mapSavingsGoalToDbSavingsGoal } from '@/lib/supabaseMappers';
 import { SavingsGoal } from '@/types';
+import { DbSavingsGoal } from '@/types/supabase';
 
-// GET - Read all savings goals
+// GET - Read all savings goals for the authenticated user
 export async function GET() {
   try {
-    const savings = await googleSheetsStorage.getSavings() as SavingsGoal[];
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { data, error } = await supabase
+      .from('savings_goals')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error reading savings:', error);
+      return NextResponse.json({ error: 'Failed to read savings' }, { status: 500 });
+    }
+
+    const savings = (data as DbSavingsGoal[]).map(mapDbSavingsGoalToSavingsGoal);
     return NextResponse.json(savings);
   } catch (error) {
     console.error('Error reading savings:', error);
@@ -13,20 +32,41 @@ export async function GET() {
   }
 }
 
-// POST - Save all savings goals (replaces entire list)
+// POST - Save all savings goals (replaces entire list for the user)
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const savings: SavingsGoal[] = await request.json();
+    const userId = session.user.id;
 
-    // Convert dates to ISO strings for storage
-    const savingsForStorage = savings.map(goal => ({
-      ...goal,
-      deadline: goal.deadline instanceof Date ? goal.deadline.toISOString() : goal.deadline,
-      createdAt: goal.createdAt instanceof Date ? goal.createdAt.toISOString() : goal.createdAt,
-      updatedAt: goal.updatedAt instanceof Date ? goal.updatedAt.toISOString() : goal.updatedAt,
-    }));
+    // Delete existing savings goals for this user
+    const { error: deleteError } = await supabase
+      .from('savings_goals')
+      .delete()
+      .eq('user_id', userId);
 
-    await googleSheetsStorage.saveSavings(savingsForStorage);
+    if (deleteError) {
+      console.error('Error deleting existing savings:', deleteError);
+      return NextResponse.json({ error: 'Failed to save savings' }, { status: 500 });
+    }
+
+    // Insert new savings goals if there are any
+    if (savings.length > 0) {
+      const savingsForDb = savings.map(goal => mapSavingsGoalToDbSavingsGoal(goal, userId));
+
+      const { error: insertError } = await supabase
+        .from('savings_goals')
+        .insert(savingsForDb);
+
+      if (insertError) {
+        console.error('Error inserting savings:', insertError);
+        return NextResponse.json({ error: 'Failed to save savings' }, { status: 500 });
+      }
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

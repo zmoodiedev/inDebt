@@ -16,7 +16,33 @@ export default function BillsPage() {
   useEffect(() => {
     const loadBills = async () => {
       const storedBills = await fetchBills();
-      setBills(storedBills);
+
+      // Process auto-pay bills: mark as paid if due date has passed
+      const today = new Date();
+      const currentDay = today.getDate();
+      let needsUpdate = false;
+
+      const processedBills = storedBills.map(bill => {
+        // Check if bill has auto-pay enabled, is not already paid, and due date has passed
+        if (bill.isAutoPay && !bill.isPaid && currentDay > bill.dueDate) {
+          needsUpdate = true;
+          return {
+            ...bill,
+            isPaid: true,
+            lastPaidDate: new Date(),
+            updatedAt: new Date(),
+          };
+        }
+        return bill;
+      });
+
+      setBills(processedBills);
+
+      // Save updated bills if any were auto-paid
+      if (needsUpdate) {
+        await saveBillsToSheet(processedBills);
+      }
+
       setIsLoading(false);
     };
     loadBills();

@@ -56,7 +56,10 @@ export default function BillCard({ bill, onEdit, onDelete, onTogglePaid }: BillC
           {categoryIcons[bill.category] || categoryIcons.other}
         </div>
         <div className="bill-card-info">
-          <h3 className="bill-card-name">{bill.name}</h3>
+          <h3 className="bill-card-name">
+            {bill.name}
+            {bill.isAutoPay && <span className="bill-card-autopay-badge">Auto-Pay</span>}
+          </h3>
           <div className="bill-card-details">
             <span className={`bill-card-due ${dueStatus.className}`}>
               {dueStatus.text}

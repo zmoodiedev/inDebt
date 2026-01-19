@@ -436,6 +436,32 @@
   box-shadow: 0 4px 12px rgba(255, 123, 156, 0.4);
 }
 
+.form-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.form-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: #FF7B9C;
+  cursor: pointer;
+}
+
+.form-checkbox-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1A1D2E;
+}
+
+.form-hint {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin: 6px 0 0 30px;
+}
+
 /* Two-column layout for CAD/USD debts */
 .debts-columns {
   display: grid;

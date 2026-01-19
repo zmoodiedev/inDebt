@@ -188,6 +188,21 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bill-card-autopay-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
 }
 
 .bill-card-details {

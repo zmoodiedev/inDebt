@@ -20,6 +20,7 @@ export default function BillForm({ bill, onSave, onClose }: BillFormProps) {
     isRecurring: true,
     frequency: 'monthly' as Bill['frequency'],
     currency: 'CAD' as Currency,
+    isAutoPay: false,
   });
 
   useEffect(() => {
@@ -32,6 +33,7 @@ export default function BillForm({ bill, onSave, onClose }: BillFormProps) {
         isRecurring: bill.isRecurring,
         frequency: bill.frequency,
         currency: bill.currency || 'CAD',
+        isAutoPay: bill.isAutoPay || false,
       });
     }
   }, [bill]);
@@ -49,6 +51,7 @@ export default function BillForm({ bill, onSave, onClose }: BillFormProps) {
       isRecurring: formData.isRecurring,
       frequency: formData.frequency,
       isPaid: bill?.isPaid || false,
+      isAutoPay: formData.isAutoPay,
       lastPaidDate: bill?.lastPaidDate,
       currency: formData.currency,
       createdAt: bill?.createdAt || now,
@@ -175,6 +178,20 @@ export default function BillForm({ bill, onSave, onClose }: BillFormProps) {
               <option value="quarterly">Quarterly</option>
               <option value="annually">Annually</option>
             </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-checkbox-label">
+              <input
+                type="checkbox"
+                name="isAutoPay"
+                checked={formData.isAutoPay}
+                onChange={handleChange}
+                className="form-checkbox"
+              />
+              <span className="form-checkbox-text">Auto-Pay Enabled</span>
+            </label>
+            <p className="form-hint">Bill will automatically be marked as paid when the due date passes</p>
           </div>
 
           <div className="form-actions">
