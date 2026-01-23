@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/auth/AuthProvider";
+import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,6 +17,23 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "inDebt - Personal Budgeting App",
   description: "Personal budgeting app for managing debts, bills, and savings goals",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "inDebt",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#1A1D2E",
 };
 
 export default function RootLayout({
@@ -32,6 +50,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
         </AuthProvider>
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );
