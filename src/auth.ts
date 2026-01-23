@@ -44,14 +44,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return true;
     },
-    async jwt({ token, user }) {
-      // On initial sign-in, resolve the household
-      if (user && token.sub && user.email) {
-        try {
-          const householdId = await getOrCreateHouseholdForUser(token.sub, user.email);
-          (token as { householdId?: string }).householdId = householdId;
-        } catch (error) {
-          console.error('Failed to resolve household:', error);
+    async jwt({ token, user, trigger }) {
+      const extendedToken = token as { householdId?: string; email?: string };
+
+      // Store email in token for later use
+      if (user?.email) {
+        extendedToken.email = user.email;
+      }
+
+      // Resolve household on sign-in, or if householdId is missing from token
+      const shouldResolveHousehold =
+        (trigger === 'signIn' && user) ||
+        (!extendedToken.householdId && token.sub && extendedToken.email);
+
+      if (shouldResolveHousehold && token.sub) {
+        const email = user?.email || extendedToken.email;
+        if (email) {
+          try {
+            const householdId = await getOrCreateHouseholdForUser(token.sub, email);
+            extendedToken.householdId = householdId;
+          } catch (error) {
+            console.error('Failed to resolve household:', error);
+          }
         }
       }
       return token;

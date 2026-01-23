@@ -29,7 +29,7 @@ export async function getOrCreateHouseholdForUser(
   email: string
 ): Promise<string> {
   // 1. Check if user already has a household membership
-  const { data: existingMembership } = await supabase
+  const { data: existingMembership, error: membershipError } = await supabase
     .from('household_members')
     .select('household_id')
     .eq('user_id', userId)
@@ -37,6 +37,11 @@ export async function getOrCreateHouseholdForUser(
 
   if (existingMembership) {
     return existingMembership.household_id;
+  }
+
+  // If error is not "no rows returned", log it
+  if (membershipError && membershipError.code !== 'PGRST116') {
+    console.error('Error checking existing membership:', membershipError);
   }
 
   // 2. Check for pending invite by email (user_id starts with 'pending:')
