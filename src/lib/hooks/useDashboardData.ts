@@ -39,7 +39,19 @@ export function useDashboardData() {
 
   // Calculate metrics
   const totalDebt = debts.reduce((sum, d) => sum + d.currentBalance, 0);
-  const totalBillsAmount = bills.reduce((sum, b) => sum + b.amount, 0);
+
+  // Normalize bills to monthly amounts based on frequency
+  const totalBillsAmount = bills.reduce((sum, b) => {
+    switch (b.frequency) {
+      case 'quarterly':
+        return sum + b.amount / 3;
+      case 'annually':
+        return sum + b.amount / 12;
+      case 'monthly':
+      default:
+        return sum + b.amount;
+    }
+  }, 0);
   const totalSavings = savings.reduce((sum, s) => sum + s.currentAmount, 0);
   const savingsTarget = savings.reduce((sum, s) => sum + s.targetAmount, 0);
 
