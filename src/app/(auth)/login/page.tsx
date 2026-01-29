@@ -3,6 +3,7 @@
 import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import { setDemoMode } from '@/lib/demo/demoState';
 
 function LoginContent() {
   const searchParams = useSearchParams();
@@ -10,6 +11,11 @@ function LoginContent() {
 
   const handleGoogleSignIn = () => {
     signIn('google', { callbackUrl: '/' });
+  };
+
+  const handleTryDemo = () => {
+    setDemoMode(true);
+    window.location.href = '/';
   };
 
   return (
@@ -183,6 +189,51 @@ function LoginContent() {
         </button>
 
         <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          margin: '20px 0 0',
+        }}>
+          <div style={{ flex: 1, height: '1px', background: '#E5E7EB' }} />
+          <span style={{ fontSize: '13px', color: '#9CA3AF', fontWeight: 500 }}>or</span>
+          <div style={{ flex: 1, height: '1px', background: '#E5E7EB' }} />
+        </div>
+
+        <button
+          onClick={handleTryDemo}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '10px',
+            padding: '14px 24px',
+            marginTop: '16px',
+            background: 'linear-gradient(135deg, #FF7B9C 0%, #FF6B9D 100%)',
+            border: 'none',
+            borderRadius: '14px',
+            fontSize: '15px',
+            fontWeight: 600,
+            color: 'white',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 8px 20px -5px rgba(255, 123, 156, 0.5)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = 'none';
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+          Try Demo
+        </button>
+
+        <div style={{
           marginTop: '32px',
           paddingTop: '24px',
           borderTop: '1px solid #F3F4F6',
@@ -192,7 +243,7 @@ function LoginContent() {
             color: '#9CA3AF',
             margin: 0,
           }}>
-            Private dashboard for authorized users only
+            Explore with sample data or sign in to your account
           </p>
         </div>
       </div>

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { Currency } from '@/types';
 import { MonthSelector } from '@/components/ui';
+import { isDemoMode, setDemoMode } from '@/lib/demo/demoState';
+import { resetDemoStore } from '@/lib/demo/demoStore';
 
 interface HeaderProps {
   currency: Currency;
@@ -14,6 +16,7 @@ export default function Header({ currency, onCurrencyChange }: HeaderProps) {
   const { data: session } = useSession();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [demo, setDemo] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -21,6 +24,16 @@ export default function Header({ currency, onCurrencyChange }: HeaderProps) {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    setDemo(isDemoMode());
+  }, []);
+
+  const handleExitDemo = () => {
+    setDemoMode(false);
+    resetDemoStore();
+    window.location.href = '/login';
+  };
 
   return (
     <header
@@ -91,8 +104,23 @@ export default function Header({ currency, onCurrencyChange }: HeaderProps) {
           </button>
         </div>
 
+        {/* Demo badge */}
+        {demo && (
+          <div style={{
+            padding: isMobile ? '4px 8px' : '4px 12px',
+            background: 'linear-gradient(135deg, #FF7B9C 0%, #FF6B9D 100%)',
+            borderRadius: '8px',
+            fontSize: '12px',
+            fontWeight: 600,
+            color: 'white',
+            flexShrink: 0,
+          }}>
+            DEMO
+          </div>
+        )}
+
         {/* User menu */}
-        {session?.user && (
+        {(session?.user || demo) && (
           <div style={{ position: 'relative', flexShrink: 0 }}>
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
@@ -108,7 +136,7 @@ export default function Header({ currency, onCurrencyChange }: HeaderProps) {
                 transition: 'all 0.2s',
               }}
             >
-              {session.user.image ? (
+              {!demo && session?.user?.image ? (
                 <img
                   src={session.user.image}
                   alt=""
@@ -133,7 +161,7 @@ export default function Header({ currency, onCurrencyChange }: HeaderProps) {
                     fontWeight: 600,
                   }}
                 >
-                  {session.user.name?.charAt(0) || session.user.email?.charAt(0) || '?'}
+                  {demo ? 'D' : (session?.user?.name?.charAt(0) || session?.user?.email?.charAt(0) || '?')}
                 </div>
               )}
               {!isMobile && (
@@ -178,14 +206,14 @@ export default function Header({ currency, onCurrencyChange }: HeaderProps) {
                   }}
                 >
                   <p style={{ margin: 0, fontWeight: 600, color: '#1A1D2E', fontSize: '14px' }}>
-                    {session.user.name || 'User'}
+                    {demo ? 'Demo User' : (session?.user?.name || 'User')}
                   </p>
                   <p style={{ margin: '4px 0 0', color: '#6B7280', fontSize: '12px' }}>
-                    {session.user.email}
+                    {demo ? 'demo@example.com' : session?.user?.email}
                   </p>
                 </div>
                 <button
-                  onClick={() => signOut({ callbackUrl: '/login' })}
+                  onClick={demo ? handleExitDemo : () => signOut({ callbackUrl: '/login' })}
                   style={{
                     width: '100%',
                     padding: '12px 16px',
@@ -196,11 +224,11 @@ export default function Header({ currency, onCurrencyChange }: HeaderProps) {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    color: '#EF4444',
+                    color: demo ? '#FF7B9C' : '#EF4444',
                     fontSize: '14px',
                     transition: 'background 0.2s',
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.background = '#FEE2E2'}
+                  onMouseOver={(e) => e.currentTarget.style.background = demo ? '#FFF1F4' : '#FEE2E2'}
                   onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
                 >
                   <svg
@@ -215,7 +243,7 @@ export default function Header({ currency, onCurrencyChange }: HeaderProps) {
                     <polyline points="16 17 21 12 16 7" />
                     <line x1="21" y1="12" x2="9" y2="12" />
                   </svg>
-                  Sign out
+                  {demo ? 'Exit Demo' : 'Sign out'}
                 </button>
               </div>
             )}

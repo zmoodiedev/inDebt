@@ -1,4 +1,6 @@
 import { Debt, Bill, SavingsGoal, Income, Transaction, Currency } from '@/types';
+import { isDemoMode } from '@/lib/demo/demoState';
+import * as demoStore from '@/lib/demo/demoStore';
 
 const STORAGE_KEYS = {
   DEBTS: 'finance_dashboard_debts',
@@ -59,6 +61,7 @@ export const saveDebts = (debts: Debt[]) => setToStorage(STORAGE_KEYS.DEBTS, deb
 
 // Debts - API/Excel storage
 export async function fetchDebts(): Promise<Debt[]> {
+  if (isDemoMode()) return demoStore.fetchDebts();
   try {
     const response = await fetch('/api/debts');
     if (!response.ok) throw new Error('Failed to fetch');
@@ -70,6 +73,7 @@ export async function fetchDebts(): Promise<Debt[]> {
 }
 
 export async function saveDebtsToExcel(debts: Debt[]): Promise<boolean> {
+  if (isDemoMode()) return demoStore.saveDebtsToExcel(debts);
   try {
     const response = await fetch('/api/debts', {
       method: 'POST',
@@ -89,6 +93,7 @@ export const saveBills = (bills: Bill[]) => setToStorage(STORAGE_KEYS.BILLS, bil
 
 // Bills - API storage
 export async function fetchBills(): Promise<Bill[]> {
+  if (isDemoMode()) return demoStore.fetchBills();
   try {
     const response = await fetch('/api/bills');
     if (!response.ok) throw new Error('Failed to fetch');
@@ -100,6 +105,7 @@ export async function fetchBills(): Promise<Bill[]> {
 }
 
 export async function createBill(bill: Bill): Promise<Bill | null> {
+  if (isDemoMode()) return demoStore.createBill(bill);
   try {
     const response = await fetch('/api/bills', {
       method: 'POST',
@@ -115,6 +121,7 @@ export async function createBill(bill: Bill): Promise<Bill | null> {
 }
 
 export async function updateBill(id: string, bill: Partial<Bill>): Promise<boolean> {
+  if (isDemoMode()) return demoStore.updateBill(id, bill);
   try {
     const response = await fetch(`/api/bills/${id}`, {
       method: 'PUT',
@@ -129,6 +136,7 @@ export async function updateBill(id: string, bill: Partial<Bill>): Promise<boole
 }
 
 export async function deleteBill(id: string): Promise<boolean> {
+  if (isDemoMode()) return demoStore.deleteBill(id);
   try {
     const response = await fetch(`/api/bills/${id}`, {
       method: 'DELETE',
@@ -148,6 +156,7 @@ export const saveSavingsGoals = (goals: SavingsGoal[]) =>
 
 // Savings Goals - API/Google Sheets storage
 export async function fetchSavings(): Promise<SavingsGoal[]> {
+  if (isDemoMode()) return demoStore.fetchSavings();
   try {
     const response = await fetch('/api/savings');
     if (!response.ok) throw new Error('Failed to fetch');
@@ -159,6 +168,7 @@ export async function fetchSavings(): Promise<SavingsGoal[]> {
 }
 
 export async function saveSavingsToSheet(savings: SavingsGoal[]): Promise<boolean> {
+  if (isDemoMode()) return demoStore.saveSavingsToSheet(savings);
   try {
     const response = await fetch('/api/savings', {
       method: 'POST',
@@ -174,6 +184,7 @@ export async function saveSavingsToSheet(savings: SavingsGoal[]): Promise<boolea
 
 // Income - API/Google Sheets storage
 export async function fetchIncome(): Promise<Income[]> {
+  if (isDemoMode()) return demoStore.fetchIncome();
   try {
     const response = await fetch('/api/income');
     if (!response.ok) throw new Error('Failed to fetch');
@@ -185,6 +196,7 @@ export async function fetchIncome(): Promise<Income[]> {
 }
 
 export async function saveIncomeToSheet(income: Income[]): Promise<boolean> {
+  if (isDemoMode()) return demoStore.saveIncomeToSheet(income);
   try {
     const response = await fetch('/api/income', {
       method: 'POST',
@@ -210,6 +222,7 @@ export const saveTransactions = (transactions: Transaction[]) =>
 
 // Transactions - API/Google Sheets storage
 export async function fetchTransactions(): Promise<Transaction[]> {
+  if (isDemoMode()) return demoStore.fetchTransactions();
   try {
     const response = await fetch('/api/transactions');
     if (!response.ok) throw new Error('Failed to fetch');
@@ -221,6 +234,7 @@ export async function fetchTransactions(): Promise<Transaction[]> {
 }
 
 export async function saveTransactionsToSheet(transactions: Transaction[]): Promise<boolean> {
+  if (isDemoMode()) return demoStore.saveTransactionsToSheet(transactions);
   try {
     const response = await fetch('/api/transactions', {
       method: 'POST',

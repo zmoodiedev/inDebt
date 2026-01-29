@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { isDemoMode } from '@/lib/demo/demoState';
 import './Settings.css';
 
 interface HouseholdMember {
@@ -36,6 +37,17 @@ export default function SettingsPage() {
   const [inviteSuccess, setInviteSuccess] = useState<string | null>(null);
 
   const loadHousehold = async () => {
+    if (isDemoMode()) {
+      const demoData: HouseholdData = {
+        household: { id: 'demo', name: 'Demo Household' },
+        members: [{ id: 'demo-member-1', email: 'demo@example.com', role: 'owner', userId: 'demo', joinedAt: new Date().toISOString() }],
+      };
+      setHouseholdData(demoData);
+      setHouseholdName(demoData.household.name);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/household');
       if (!response.ok) {
@@ -59,6 +71,13 @@ export default function SettingsPage() {
     if (!householdName.trim()) return;
 
     setIsSavingName(true);
+    if (isDemoMode()) {
+      setHouseholdData(prev => prev ? { ...prev, household: { ...prev.household, name: householdName.trim() } } : prev);
+      setIsEditingName(false);
+      setIsSavingName(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/household', {
         method: 'PATCH',
@@ -87,6 +106,18 @@ export default function SettingsPage() {
     setInviteError(null);
     setInviteSuccess(null);
 
+    if (isDemoMode()) {
+      const email = inviteEmail.trim();
+      setHouseholdData(prev => prev ? {
+        ...prev,
+        members: [...prev.members, { id: `demo-member-${Date.now()}`, email, role: 'member' as const, userId: `pending:${email}`, joinedAt: new Date().toISOString() }],
+      } : prev);
+      setInviteSuccess(`Invitation sent to ${email}`);
+      setInviteEmail('');
+      setIsInviting(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/household/invite', {
         method: 'POST',
@@ -112,6 +143,11 @@ export default function SettingsPage() {
 
   const handleRemoveMember = async (email: string) => {
     if (!confirm(`Remove ${email} from the household?`)) return;
+
+    if (isDemoMode()) {
+      setHouseholdData(prev => prev ? { ...prev, members: prev.members.filter(m => m.email !== email) } : prev);
+      return;
+    }
 
     try {
       const response = await fetch('/api/household/invite', {

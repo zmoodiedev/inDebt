@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 export const proxy = auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
+  const isDemo = req.cookies.get('finance_dashboard_demo')?.value === 'true';
 
   const isLoginPage = nextUrl.pathname === '/login';
   const isAuthApi = nextUrl.pathname.startsWith('/api/auth');
@@ -16,10 +17,15 @@ export const proxy = auth((req) => {
 
   // Allow login page
   if (isLoginPage) {
-    // Redirect to home if already logged in
-    if (isLoggedIn) {
+    // Redirect to home if already logged in (or in demo mode)
+    if (isLoggedIn || isDemo) {
       return NextResponse.redirect(new URL('/', req.url));
     }
+    return NextResponse.next();
+  }
+
+  // Demo mode bypasses auth for pages (API routes are never hit in demo)
+  if (isDemo) {
     return NextResponse.next();
   }
 
