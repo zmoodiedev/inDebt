@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Error creating bill:', error);
-      return NextResponse.json({ error: 'Failed to create bill' }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to create bill', details: error.message }, { status: 500 });
     }
 
     return NextResponse.json(mapDbBillToBill(data as DbBill));
